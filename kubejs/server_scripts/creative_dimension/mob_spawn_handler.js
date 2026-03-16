@@ -3,7 +3,7 @@ const $MobSpawnType = Java.loadClass("net.minecraft.world.entity.MobSpawnType")
 
 EntityEvents.checkSpawn((event) => {
     const dim = event.entity.level.dimension.toString();
-    if (dim !== CREATIVE_DIM) return;
+    if (!isCreativeDim(dim)) return;
 
     if (event.type == $MobSpawnType.NATURAL || event.type == $MobSpawnType.CHUNK_GENERATION) {
         if (event.entity.entityType.mod == "minecraft") {

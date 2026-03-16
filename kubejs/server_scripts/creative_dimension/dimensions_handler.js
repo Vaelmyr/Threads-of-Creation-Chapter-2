@@ -5,7 +5,10 @@ NativeEvents.onEvent($EntityTravelToDimensionEvent, function (event) {
     const targetDim = dimToString(event.getDimension());
     const currentDim = dimToString(entity.level.dimension);
 
-    if (targetDim !== CREATIVE_DIM && currentDim !== CREATIVE_DIM) {
+    const currentIsCreative = isCreativeDim(currentDim);
+    const targetIsCreative = isCreativeDim(targetDim);
+
+    if (!currentIsCreative && !targetIsCreative) {
         return;
     }
 
@@ -37,11 +40,16 @@ NativeEvents.onEvent($EntityTravelToDimensionEvent, function (event) {
         return;
     }
 
-    // Player entity: profile swap
-    if (targetDim === CREATIVE_DIM && currentDim !== CREATIVE_DIM) {
-        onCreativeDimTransition(entity, true);
-    } else if (currentDim === CREATIVE_DIM && targetDim !== CREATIVE_DIM) {
-        onCreativeDimTransition(entity, false);
+    // Player entity: handle transitions
+    if (!currentIsCreative && targetIsCreative) {
+        // Survival → Creative
+        onCreativeDimTransition(entity, true, targetDim);
+    } else if (currentIsCreative && !targetIsCreative) {
+        // Creative → Survival
+        onCreativeDimTransition(entity, false, targetDim);
+    } else {
+        // Creative → Creative (switching between creative dims)
+        onCreativeDimSwitch(entity, targetDim);
     }
 });
 
@@ -52,5 +60,5 @@ PlayerEvents.respawned(event => {
     if (!player.persistentData.contains(DATA_PREFIX + 'in_creative')) return;
 
     console.info(`[CreativeDimension.respawned] Player ${getPlayerName(player)} died in creative dimension`);
-    onCreativeDimTransition(player, false);
+    onCreativeDimTransition(player, false, 'minecraft:overworld');
 });

@@ -1,18 +1,25 @@
-const cmdEnterCreative = (player) => {
-    const currentDim = dimToString(player.level.dimension);
-    if (currentDim === CREATIVE_DIM) {
-        player.tell('\u00a7cYou are already in the creative dimension!');
+const cmdEnterCreative = (player, dimKey) => {
+    const config = CREATIVE_DIMS[dimKey];
+    if (!config) {
+        player.tell('\u00a7cUnknown creative dimension: ' + dimKey);
         return 0;
     }
 
-    player.server.runCommandSilent('execute in ' + CREATIVE_DIM + ' run tp ' + getPlayerName(player) + ' ~ ~ ~');
+    const currentDim = dimToString(player.level.dimension);
+
+    if (currentDim === config.dimension) {
+        player.tell('\u00a7cYou are already in that creative dimension!');
+        return 0;
+    }
+
+    player.server.runCommandSilent('execute in ' + config.dimension + ' run tp ' + getPlayerName(player) + ' ~ ~ ~');
     return 1;
 }
 
 const cmdExitCreative = (player) => {
     const currentDim = dimToString(player.level.dimension);
-    if (currentDim !== CREATIVE_DIM) {
-        player.tell('\u00a7cYou are not in the creative dimension!');
+    if (!isCreativeDim(currentDim)) {
+        player.tell('\u00a7cYou are not in a creative dimension!');
         return 0;
     }
 
@@ -27,7 +34,7 @@ const cmdExitCreative = (player) => {
 
 const cmdResetCreative = (player) => {
     const currentDim = dimToString(player.level.dimension);
-    if (currentDim === CREATIVE_DIM) {
+    if (isCreativeDim(currentDim)) {
         player.tell('\u00a7cYou must exit the creative dimension first!');
         return 0;
     }
@@ -35,11 +42,10 @@ const cmdResetCreative = (player) => {
     const creativeKeys = [
         DATA_PREFIX + 'creative_profile',
         DATA_PREFIX + 'creative_curios',
-        DATA_PREFIX + 'creative_pos',
-    ];
+    ].concat(Object.keys(CREATIVE_DIMS).map(k => DATA_PREFIX + 'creative_pos_' + k));
 
     let removed = 0;
-    creativeKeys.forEach(function (key) {
+    creativeKeys.forEach((key) => {
         if (player.persistentData.contains(key)) {
             player.persistentData.remove(key);
             removed++;
@@ -56,12 +62,22 @@ const cmdResetCreative = (player) => {
     return 1;
 }
 
-ServerEvents.commandRegistry(function (event) {
+ServerEvents.commandRegistry((event) => {
     let Commands = event.commands;
+
+    // Build the 'enter' subcommand with a literal for each creative dimension
+    let enterNode = Commands.literal('enter');
+    Object.keys(CREATIVE_DIMS).forEach((key) => {
+        enterNode = enterNode.then(
+            Commands.literal(key).executes((ctx) => {
+                return cmdEnterCreative(ctx.source.player, key);
+            })
+        );
+    });
 
     event.register(
         Commands.literal('creative')
-            .then(Commands.literal('enter').executes((ctx) => cmdEnterCreative(ctx.source.player)))
+            .then(enterNode)
             .then(Commands.literal('exit').executes((ctx) => cmdExitCreative(ctx.source.player)))
             .then(
                 Commands.literal('debug')

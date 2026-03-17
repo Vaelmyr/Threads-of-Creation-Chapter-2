@@ -35,7 +35,7 @@ NativeEvents.onEvent($EntityTravelToDimensionEvent, function (event) {
     // Player entity: Check for CarryOn
     if (isCarryingWithCarryOn(entity)) {
         event.setCanceled(true);
-        entity.tell('\u00a7cYou cannot change dimension while carrying something! Please put it down first.');
+        entity.displayClientMessage('\u00a7cYou cannot change dimension while carrying something! Please put it down first.', true);
         console.info(`[CreativeDimension.$EntityTravelToDimensionEvent] Player ${getPlayerName(entity)} can't change dimension because is carrying something`);
         return;
     }

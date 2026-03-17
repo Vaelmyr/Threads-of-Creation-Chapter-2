@@ -21,6 +21,8 @@ const CDM_KEYS = [
     DATA_PREFIX + 'creative_profile',
     DATA_PREFIX + 'survival_curios',
     DATA_PREFIX + 'creative_curios',
+    DATA_PREFIX + 'survival_neoforge',
+    DATA_PREFIX + 'creative_neoforge',
     DATA_PREFIX + 'survival_pos',
     DATA_PREFIX + 'in_creative',
 ].concat(Object.keys(CREATIVE_DIMS).map(k => DATA_PREFIX + 'creative_pos_' + k));

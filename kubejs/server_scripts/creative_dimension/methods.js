@@ -1,8 +1,10 @@
 const $CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag');
-const $ListTag = Java.loadClass('net.minecraft.nbt.ListTag');
+const $TagParser = Java.loadClass('net.minecraft.nbt.TagParser');
 const $CuriosApi = Java.loadClass('top.theillusivec4.curios.api.CuriosApi');
 const $CarryType = Java.loadClass('tschipp.carryon.common.carry.CarryOnData$CarryType');
 const $DataManager = Java.loadClass('tschipp.carryon.common.carry.CarryOnDataManager');
+const $ISSAttachments = Java.loadClass('io.redspace.ironsspellbooks.registries.DataAttachmentRegistry');
+const $IRAttachments = Java.loadClass('com.relimer.ironsrestrictions.registries.DataAttachmentRegistry');
 
 //#region Profile
 const saveProfile = (player) => {
@@ -20,29 +22,36 @@ const saveProfile = (player) => {
     player.saveWithoutId(nbt);
     EXCLUDE_KEYS.forEach((key) => nbt.remove(key));
 
-    // 3. Remove NeoForgeData entirely — it contains a live reference to `persistentData`
+    // 3. Extract NeoForge mod data (e.g. Iron's Spellbooks magic_data, rarity_data).
+    //    CDM keys were removed in step 1, so NeoForgeData here only contains mod attachment data.
+    const neoforgeSnbt = nbt.contains('NeoForgeData')
+        ? nbt.getCompound('NeoForgeData').toString()
+        : '';
+
+    // 4. Remove NeoForgeData from the profile — it contains a live reference to `persistentData`
     //    which causes circular references when stored back into `persistentData`.
-    //    CDM keys are already handled separately, and other persistent mod data
-    //    should not be swapped between creative/survival profiles.
+    //    Mod attachment data was already extracted above.
     nbt.remove('NeoForgeData');
 
-    // 4. Deep-copy the tag to break ALL live object references.
-    //    NeoForgeData (which contains persistentData) was already removed above,
-    //    so copy() is safe and avoids SNBT round-trip failures with modded NBT.
-    const copy = nbt.copy();
+    // 5. Convert to SNBT string to break ALL object references.
+    //    Storing a CompoundTag inside persistentData causes circular references
+    //    because saveWithoutId() embeds live references to persistentData itself.
+    const snbt = nbt.toString();
 
-    // 5. Restore keys to the live `persistentData`
+    // 6. Restore keys to the live `persistentData`
     getKeys(cdmBackup).forEach((key) => player.persistentData.put(key, cdmBackup.get(key)));
 
     console.info(`[CreativeDimension.saveProfile] Profile saved for player ${getPlayerName(player)}`);
-    return copy;
+    return { profile: snbt, neoforge: neoforgeSnbt };
 }
 
-const restoreProfile = (player, savedProfile) => {
-    if (!savedProfile || savedProfile.isEmpty()) {
+const restoreProfile = (player, snbt, neoforgeSnbt) => {
+    if (!snbt || snbt.length === 0) {
         console.warn(`[CreativeDimension.restoreProfile] No profile data to restore for player ${getPlayerName(player)}`);
         return;
     }
+
+    const savedProfile = $TagParser.parseTag(snbt);
 
     console.info(`[CreativeDimension.restoreProfile] Restoring profile for player ${getPlayerName(player)}`);
 
@@ -53,6 +62,14 @@ const restoreProfile = (player, savedProfile) => {
             cdmBackup.put(key, player.persistentData.get(key));
         }
     });
+
+    // Inject NeoForge mod data into the profile so player.load() deserializes
+    // mod attachments (e.g. Iron's Spellbooks magic_data, rarity_data).
+    // NeoForgeData was stripped from saved profiles to avoid circular references,
+    // but mod attachment data needs to be restored for the attachment system to pick it up.
+    if (neoforgeSnbt && neoforgeSnbt.length > 0) {
+        savedProfile.put('NeoForgeData', $TagParser.parseTag(neoforgeSnbt));
+    }
 
     clearProfile(player);
     player.load(savedProfile);
@@ -151,21 +168,17 @@ const clearCurios = (player) => {
             const iter = handler.getCurios().entrySet().iterator();
 
             while (iter.hasNext()) {
-                let entry = iter.next();
-                let stacksHandler = entry.getValue();
+                const entry = iter.next();
 
-                // Serialize current state to get the structure, then replace
-                // item lists with explicit empty ListTags and deserialize back.
-                // Just removing keys causes deserializeNBT to skip processing;
-                // empty lists explicitly tell it "zero items".
-                let nbt = stacksHandler.serializeNBT();
-                getKeys(nbt).forEach(function (key) {
-                    if (key !== 'Slots' && key !== 'SizeOverride') {
-                        nbt.put(key, new $ListTag());
-                    }
-                });
+                const stacks = entry.getValue().getStacks();
+                for (let i = 0; i < stacks.getSlots(); i++) {
+                    stacks.setStackInSlot(i, 'minecraft:air');
+                }
 
-                stacksHandler.deserializeNBT(nbt);
+                const cosmetic = entry.getValue().getCosmeticStacks();
+                for (let i = 0; i < cosmetic.getSlots(); i++) {
+                    cosmetic.setStackInSlot(i, 'minecraft:air');
+                }
             }
 
             console.info(`[CreativeDimension.clearCurios] Curios cleared for player ${getPlayerName(player)}`);
@@ -243,6 +256,27 @@ const isCarryingWithCarryOn = (player) => {
 }
 //#endregion
 
+//#region Mod Data Sync
+/** Force server→client sync of Iron's Spellbooks and Iron's Restrictions data */
+function syncModData(player) {
+    try {
+        var magicData = player.getData($ISSAttachments.MAGIC_DATA);
+        magicData.getSyncedData().doSync();
+        console.info('[CreativeDimension.syncModData] Iron\'s Spellbooks data synced for ' + getPlayerName(player));
+    } catch (e) {
+        console.warn('[CreativeDimension.syncModData] Failed to sync ISS data: ' + e);
+    }
+
+    try {
+        var rarityData = player.getData($IRAttachments.RARITY_DATA);
+        rarityData.doSync(player);
+        console.info('[CreativeDimension.syncModData] Iron\'s Restrictions data synced for ' + getPlayerName(player));
+    } catch (e) {
+        console.warn('[CreativeDimension.syncModData] Failed to sync IR data: ' + e);
+    }
+}
+//#endregion Mod Data Sync
+
 //#region Dimension Change
 /**
  * Handles transition between survival and creative dimensions.
@@ -269,7 +303,9 @@ function onCreativeDimTransition(player, isEntering, targetDimStr) {
     }
 
     // Save current profile (shared across all creative dims)
-    player.persistentData.put(DATA_PREFIX + from + '_profile', saveProfile(player));
+    var saved = saveProfile(player);
+    player.persistentData.putString(DATA_PREFIX + from + '_profile', saved.profile);
+    player.persistentData.putString(DATA_PREFIX + from + '_neoforge', saved.neoforge);
     player.persistentData.put(DATA_PREFIX + from + '_curios', saveCurios(player));
     console.info(tag + ' ' + from + ' profile saved for player ' + playerName);
 
@@ -284,13 +320,18 @@ function onCreativeDimTransition(player, isEntering, targetDimStr) {
         }
     }
 
-    // Restore target profile (curios are deferred to next tick — see below)
-    var hasTargetProfile = player.persistentData.contains(DATA_PREFIX + to + '_profile');
-    if (hasTargetProfile) {
-        restoreProfile(player, player.persistentData.getCompound(DATA_PREFIX + to + '_profile'));
+    // Restore target profile
+    if (player.persistentData.contains(DATA_PREFIX + to + '_profile')) {
+        restoreProfile(
+            player,
+            player.persistentData.getString(DATA_PREFIX + to + '_profile'),
+            player.persistentData.getString(DATA_PREFIX + to + '_neoforge')
+        );
+        restoreCurios(player, player.persistentData.getCompound(DATA_PREFIX + to + '_curios'));
         console.info(tag + ' ' + to + ' profile restored for player ' + playerName);
     } else if (isEntering) {
         clearProfile(player);
+        clearCurios(player);
         console.info(tag + ' No ' + to + ' state found, state cleared for player ' + playerName);
     } else {
         console.warn(tag + ' No ' + to + ' state found for player ' + playerName);
@@ -312,7 +353,6 @@ function onCreativeDimTransition(player, isEntering, targetDimStr) {
     }
 
     var hasSavedPos = player.persistentData.contains(posKey);
-    var curiosKey = DATA_PREFIX + to + '_curios';
     var msg = isEntering
         ? '\u00a7aYou have entered the creative dimension!'
         : '\u00a7aYou have returned to the survival dimension!';
@@ -325,15 +365,9 @@ function onCreativeDimTransition(player, isEntering, targetDimStr) {
         } else {
             teleportToDefaultPos(_player, tpDimStr);
         }
-        // Restore or clear curios AFTER the dimension change has completed,
-        // otherwise changeDimension() re-syncs capabilities and overwrites our changes.
-        if (hasTargetProfile) {
-            restoreCurios(_player, _player.persistentData.getCompound(curiosKey));
-        } else if (isEntering) {
-            clearCurios(_player);
-        }
 
-        _player.tell(msg);
+        syncModData(_player);
+        _player.displayClientMessage(msg, true);
     });
 }
 
@@ -365,7 +399,7 @@ function onCreativeDimSwitch(player, targetDimStr) {
             teleportToDefaultPos(_player, targetDimStr);
         }
 
-        _player.tell('\u00a7aSwitched to creative ' + targetKey + '!');
+        _player.displayClientMessage('\u00a7aSwitched to creative ' + targetKey + '!', true);
     });
 }
 //#endregion Dimension Change

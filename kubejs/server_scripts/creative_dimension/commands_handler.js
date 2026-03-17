@@ -1,14 +1,14 @@
 const cmdEnterCreative = (player, dimKey) => {
     const config = CREATIVE_DIMS[dimKey];
     if (!config) {
-        player.tell('\u00a7cUnknown creative dimension: ' + dimKey);
+        player.displayClientMessage('\u00a7cUnknown creative dimension: ' + dimKey, true);
         return 0;
     }
 
     const currentDim = dimToString(player.level.dimension);
 
     if (currentDim === config.dimension) {
-        player.tell('\u00a7cYou are already in that creative dimension!');
+        player.displayClientMessage('\u00a7cYou are already in that creative dimension!', true);
         return 0;
     }
 
@@ -19,7 +19,7 @@ const cmdEnterCreative = (player, dimKey) => {
 const cmdExitCreative = (player) => {
     const currentDim = dimToString(player.level.dimension);
     if (!isCreativeDim(currentDim)) {
-        player.tell('\u00a7cYou are not in a creative dimension!');
+        player.displayClientMessage('\u00a7cYou are not in a creative dimension!', true);
         return 0;
     }
 
@@ -35,13 +35,14 @@ const cmdExitCreative = (player) => {
 const cmdResetCreative = (player) => {
     const currentDim = dimToString(player.level.dimension);
     if (isCreativeDim(currentDim)) {
-        player.tell('\u00a7cYou must exit the creative dimension first!');
+        player.displayClientMessage('\u00a7cYou must exit the creative dimension first!', true);
         return 0;
     }
 
     const creativeKeys = [
         DATA_PREFIX + 'creative_profile',
         DATA_PREFIX + 'creative_curios',
+        DATA_PREFIX + 'creative_neoforge',
     ].concat(Object.keys(CREATIVE_DIMS).map(k => DATA_PREFIX + 'creative_pos_' + k));
 
     let removed = 0;
@@ -53,10 +54,10 @@ const cmdResetCreative = (player) => {
     });
 
     if (removed > 0) {
-        player.tell('\u00a7aCreative dimension data reset! (' + removed + ' entries cleared)');
+        player.displayClientMessage('\u00a7aCreative dimension data reset! (' + removed + ' entries cleared)', true);
         console.info('[CreativeDimension] Reset creative data for ' + getPlayerName(player) + ' (' + removed + ' entries)');
     } else {
-        player.tell('\u00a7eNo creative dimension data found to reset.');
+        player.displayClientMessage('\u00a7eNo creative dimension data found to reset.', true);
     }
 
     return 1;

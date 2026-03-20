@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.2.0 - 20-03-2026
+
+Expanded the Create ecosystem with numerous addons (Bits 'n' Bobs, Transmission, Parallel Pipes, and more). Added quality-of-life and utility mods including WorldEdit, Camera Mod, and Immersive Melodies. Fixed and refactored the Creative Dimension KubeJS scripts. Removed problematic mods (Create: New Age, Create: Ore Excavation) and replaced Legendary Tooltips with Obscure Tooltips. Downgraded CarryOn to fix a multiplayer crash on entity pickup.
+
+### Added
+
+- Better Fps - Render Distance[Forge]
+- Camera Mod
+- Immersive Melodies [Fabric/Forge]
+- In Control!
+- Scholar
+- Starcatcher
+- WorldEdit
+- Obscure Tooltips
+- Rechiseled: Create
+- Create: Bits 'n' Bobs
+- Create: Transmission!
+- Create More: Parallel Pipes
+- Create: FluidLogistic
+- Create: Colorful Catalysts
+- Create: Let The Adventure Begin
+- Create: Addon Compatibility
+- Create: Fluid
+- Create More: Vertical Belts
+- Forge CIT
+- Lava Fishing
+- Mech Trowel
+- Measurements
+- Farmer's Delight
+- CBC Enchanced Shells [Create Big Cannons]
+
+### Changed
+
+- Refactored Creative Dimension KubeJS scripts
+- Ace's Spell Utils: 1.2.3 -> 1.2.4
+- CarryOn: 2.2.4.4 -> 2.2.2.11
+    - Downgraded due to known bugs causing the players in the same dimension to crash randomly on pickup of entity with inventories
+- Oritech: 1.0.1 -> 1.1.0
+- SeasonHud: 2.0.1 -> 2.0.2
+- SuperMartijn642's Core Lib: 1.1.20 -> 1.1.21
+
+### Removed
+
+- Legendary Tooltips [Neo/Forge]
+- Connectivity
+- Create: New Age
+- Create: Ore Excavation
+
 ## 0.1.0 - 18-03-2026
 
 Modpack cleanup and optimization: removed unused magic mods (Ars Nouveau, Occultism, Roots 4), orphaned libraries and utilities, and duplicate mods. Updated several mods to newer versions. Added performance mods (Entity Culling, MoreCulling, Chunk Sending), debug tools (spark, Observable), and quality of life improvements (Freecam, Just Zoom, Trash Cans, SeasonHud).
@@ -22,7 +70,7 @@ Modpack cleanup and optimization: removed unused magic mods (Ars Nouveau, Occult
 - Concurrent Chunk Management Engine
 - Entity Culling Fabric/Forge
 - MoreCulling
-- Packed Fixer
+- Packet Fixer
 - Connectivity
 - Server Performance - Smooth Chunk Save[Forge/Fabric]
 - Configured

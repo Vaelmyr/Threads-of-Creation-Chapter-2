@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ParCool Crawl doesn't work properly due an incompatibility issue with the latest Reliquified Artifacts version
 
+### Added
+
+- Implemented weapon attributes for Better Combat compatibility
+
 ### Changed
 
 - Blacklisted Backpacks from CarryOn

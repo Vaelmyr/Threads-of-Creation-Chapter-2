@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## 0.2.1 - 21-03-2026
+
+Added Better Combat compatibility through weapon attribute datapacks, added Etched and Reliquified Iron's Spells 'n Spellbooks. Updated some dependencies and removed Distant Horizons.
 
 ### Known Bugs
 
@@ -14,10 +16,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Implemented weapon attributes for Better Combat compatibility
+- Etched
+- Reliquified Iron's Spells 'n Spellbooks
 
 ### Changed
 
+- Ace's Spell Utils: 1.2.4 -> 1.2.5
+- Sophisticated Core: 1.4.9.1526 -> 1.4.10.1531
 - Blacklisted Backpacks from CarryOn
+
+### Removed
+- Distant Horizons: A Level of Detail mod
 
 ## 0.2.0 - 20-03-2026
 

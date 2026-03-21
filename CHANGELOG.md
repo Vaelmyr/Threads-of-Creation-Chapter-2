@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.2.2 - 21-03-2026
+
+### Known Bugs
+
+- ParCool Crawl doesn't work properly due an incompatibility issue with the latest Reliquified Artifacts version
+
+### Added
+
+- Etched
+
 ## 0.2.1 - 21-03-2026
 
 Added Better Combat compatibility through weapon attribute datapacks, added Etched and Reliquified Iron's Spells 'n Spellbooks. Updated some dependencies and removed Distant Horizons.
@@ -16,7 +26,6 @@ Added Better Combat compatibility through weapon attribute datapacks, added Etch
 ### Added
 
 - Implemented weapon attributes for Better Combat compatibility
-- Etched
 - Reliquified Iron's Spells 'n Spellbooks
 
 ### Changed

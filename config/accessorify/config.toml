@@ -3,6 +3,7 @@ version = 1
 slotMode = "DEFAULT_SLOT"
 hideDebugInfoInSurvival = false
 cancelElytraFlyingInLiquid = true
+preventElytraRightClickEquip = false
 
 [accessorySettings]
 clockAccessory = false

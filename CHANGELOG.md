@@ -5,6 +5,70 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### To Check
+- Apotheosis addons?
+
+### Added
+
+- Added `c:<color>_dyes` tag to `minecraft:<color>_dye` to fix some crafting recipes
+- Apothic Amendments - Enchanting
+- Bosses'Rise
+- Colorwheel
+- Colorwheel Patcher
+- CraftPresence
+- IceAndFire Community Edition
+- Ice and Fire: Spellbooks
+- Ice and Fire Dragons X Better Combat
+- Loot Integrations: Ice and Fire
+- Integrated Stronghold
+- Integrated Villages
+- Integrated Cataclysm
+- Shoulder Surfing Reloaded
+- Shoulder Surfing: Iron's Spells Integration
+- Shoulder Surfing: Ultimine
+
+### Changed
+
+- Blacklisted from CarryOn `iss_magicfromtheeast:*`
+- Apprentice's Codex: 0.7.1.2 -> 0.7.2.3
+- AzureLib: 3.1.3 -> 3.1.4
+- CBC Enchanced Shells [Create Big Cannons]: 1.0.1 -> 1.0.3
+- CoroUtil: 1.3.8 -> 1.3.9
+- Create: Let The Adventure Begin: 3.8.2 -> 3.8.4
+- Create : Misc & Thins: 4.0 -> 4.1
+- Create: Wizardry: 0.4.1 -> 0.4.2
+- CreativeCore: 2.13.35 -> 2.13.36
+- Entity Culling Fabric/Forge: 1.9.5 -> 1.10
+- Fire's Ender Expansion: 2.3.4 -> 2.3.5
+- Gensokyo Delight ~ Youkais' Feasts: 1.0.4 -> 1.0.5
+- Irons Spells 'n Spellbooks Restrictions: 5.0.9 -> 5.1.1
+- JourneyMap: 6.0.0-beta56 -> 6.0.0-beta58
+- L_Ender 's Cataclysm: 3.24 -> 3.25
+- Lava Fishing: 1.2.12 -> 1.2.13
+- Mech Trowel: 1.2.13 -> 1.3.0
+- Moonlight Lib: 2.29.20 -> 2.29.23
+- Not Enough Animations: 1.11.3 -> 1.12.0
+- Petrol's Parts for Create: 1.2.7 -> 1.2.8
+- Petrolpark Library: 1.4.28 -> 1.4.30
+- Relics: 0.11.8 -> 0.11.9
+- Serene Shrubbery: 2.3.0 -> 2.3.1
+- Simple Backups: 4.0.28 -> 4.0.29
+- Sophisticated Backpacks: 3.25.34.1581 -> 3.25.34.1604
+- Sophisticated Core: 1.4.11.1531 -> 1.4.11.1559
+- Sophisticated Item Actions: 0.3.5.92 -> 0.3.5.113
+- Sophisticated Storage: 1.5.30.1520 -> 1.5.30.1535
+- Sophisticated Storage in Motion: 0.10.26.181 -> 0.10.26.197
+- Tesseract API (NeoForge): 1.11.9 -> 1.11.10
+- Theurgy: 1.68.0 -> 1.70.0
+- Too Many Bows: 3.1.1 -> 3.3.0
+
+### Removed
+
+- Removed KubeJS scripts for "Irons Spells 'n Spellbooks Restrictions" fix
+- YUNG's Better Strongholds (NeoForge)
+
 ## 0.2.2 - 21-03-2026
 
 ### Known Bugs

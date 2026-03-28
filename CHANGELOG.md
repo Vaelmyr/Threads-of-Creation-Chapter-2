@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.3.1 - 28-03-2026
+
+### Added
+
+- Create: More Girder
+
+### Changed
+
+- Neoforge: 21.1.220 -> 21.1.222
+- [Let's Do] Brewery - Farm&Charm Compat: 2.1.8 -> 2.1.9
+- Alshanex's Familiars: 3.8 -> 3.8.5
+- Colorwheel: 1.2.2 -> 1.2.3
+- Create：FluidLogistic: 0.9.0 -> 0.9.5
+- Gensokyo Delight ~ Youkais' Feasts: 1.0.5 -> 1.0.6
+- Integrated API: 1.6.3 -> 1.7.0
+- Iron's Spells 'n Spellbooks: 3.15.4 -> 3.15.5
+- JourneyMap: 6.0.0-beta.58 -> 6.0.0-beta.59
+- Lithostitched: 1.6.1 -> 1.6.3
+- Petrol's Parts for Create: 1.2.8 -> 1.2.9
+- Shoulder Surfing Reloaded: 4.22.1 -> 4.22.3
+- Skin Layers 3D: 1.10.2 -> 1.11.0
+- Regions Unexplored: 0.5.9 -> 0.6+beta4
+
 ## 0.3.0 - 27-03-2026
 
 ### Known Bugs
